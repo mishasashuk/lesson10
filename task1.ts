@@ -12,6 +12,13 @@ abstract class Figure {
   // Добавление защитного свойства type при создании класса
   constructor(protected readonly type: string) {}
 
+  protected validatePositive(value: number, sideName: string) {
+    if (value <= 0) {
+      throw new Error(`${sideName} must be greater than 0`);
+    }
+    return value;
+  }
+
   // Добавление публичного метода получения type
   getType(): string {
     return this.type;
@@ -33,6 +40,7 @@ class Square extends Figure {
   constructor(private readonly side: number) {
     // Указание типа при создании класса
     super(FigureType.Square);
+    this.side = this.validatePositive(side, "Side");
   }
 
   // Получение площади
@@ -60,6 +68,8 @@ class Rectangle extends Figure {
   ) {
     // Указание типа при создании класса
     super(FigureType.Rectangle);
+    this.width = this.validatePositive(width, "Width");
+    this.height = this.validatePositive(height, "Height");
   }
 
   // Получение площади
@@ -86,10 +96,13 @@ class Triangle extends Figure {
     private readonly side2: number,
     private readonly side3: number,
   ) {
-    if (side1 < side2 + side3 || side2 < side1 + side3 || side3 < side1 + side2) {
+    if (!(side1 < side2 + side3 && side2 < side1 + side3 && side3 < side1 + side2)) {
       throw new Error("Invalid triangle: sum of any two sides must be greater than the third");
     }
     super(FigureType.Triangle);
+    this.side1 = this.validatePositive(side1, "Side1");
+    this.side2 = this.validatePositive(side2, "Side2");
+    this.side3 = this.validatePositive(side3, "Side3");
   }
   getArea(): number {
     const p = this.getPerimeter() / 2;
@@ -112,7 +125,7 @@ console.log(square.getDescription()); // Square with side 5
 
 console.log("-----------");
 
-const rectangle = new Rectangle(4, 6);
+const rectangle = new Rectangle(4, 3);
 console.log(rectangle.getArea()); // 24
 console.log(rectangle.getPerimeter()); // 20
 console.log(rectangle.getType()); // rectangle
